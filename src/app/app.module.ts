@@ -3,11 +3,13 @@ import { NgModule } from '@angular/core';
 
 
 import { AppComponent } from './app.component';
+import { ForceGraphComponent } from './force-graph/force-graph.component';
 
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    ForceGraphComponent
   ],
   imports: [
     BrowserModule
