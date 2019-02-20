@@ -1,14 +1,20 @@
 {
   "nodes": [
-    {"id": "Myriel", "group": 1},
-    {"id": "Napoleon", "group": 1},
-    {"id": "Mlle.Baptistine", "group": 1},
-    {"id": "Mme.Magloire", "group": 1}
+    {"id": "A", "children": 3},
+    {"id": "B", "children": 1},
+    {"id": "C", "children": 1},
+    {"id": "D", "children": 1},
+    {"id": "E", "children": 2},
+    {"id": "F", "children": 0}
   ],
-  "links": [
-    {"source": "Napoleon", "target": "Myriel", "value": 1},
-    {"source": "Mlle.Baptistine", "target": "Myriel", "value": 8},
-    {"source": "Mme.Magloire", "target": "Myriel", "value": 10},
-    {"source": "Mme.Magloire", "target": "Mlle.Baptistine", "value": 6}
+  "edges": [
+    {"source": "A", "target": "B", "weight": 0},
+    {"source": "A", "target": "C", "weight": 0},
+    {"source": "A", "target": "D", "weight": 0},
+    {"source": "C", "target": "B", "weight": 2},
+    {"source": "B", "target": "F", "weight": 1},
+    {"source": "D", "target": "B", "weight": 4},
+    {"source": "E", "target": "B", "weight": 5},
+    {"source": "E", "target": "C", "weight": 6}
   ]
 }

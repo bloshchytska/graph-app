@@ -14,49 +14,81 @@ export class ForceGraphComponent implements OnInit {
 
   ngOnInit() {
     let svg = d3.select("svg"),
-      width = +svg.attr("width"),
-      height = +svg.attr("height");
+    width  = +svg.attr("width"),
+    height = +svg.attr("height");
+
+    let marker = svg.append('defs')
+      .append('marker')
+      .attr("id", "triangle")
+      .attr("refX", 13)
+      .attr("refY", 4)
+      .attr("viewBox", "0 0 10 10")
+      .attr("markerUnits", "strokeWidth")
+      .attr("markerWidth", 5)
+      .attr("markerHeight", 5)
+      .attr("orient", 'auto')
+      .append('path')
+      .attr("d", 'M 0 0 L 8 4 L 0 8 z')
+      .attr("fill", '#999');
 
     let color = d3.scaleOrdinal(d3.schemeCategory20);
 
+
+
     let simulation = d3.forceSimulation()
-      .force("link", d3.forceLink().id((d) => { return d.id; }))
-      .force("charge", d3.forceManyBody())
+      .force("link",  d3.forceLink().id((d) => { return d.id; }))
+      .force("charge", d3.forceManyBody().strength(-40))
       .force("center", d3.forceCenter(width / 2, height / 2));
 
     d3.json("../../assets/miserables.json", (error, graph) => {
       if (error) throw error;
 
+
       let link = svg
         .append("g")
         .attr("class", "links")
         .selectAll("line")
-        .data(graph.links)
+        .data(graph.edges)
         .enter()
         .append("line")
-        .attr("stroke-width", function(d) { return Math.sqrt(d.value); });
+        .attr("stroke-width", 2);
 
-      let node = svg.append("g")
-        .attr("class", "nodes")
-        .selectAll("circle")
-        .data(graph.nodes)
-        .enter().append("circle")
+
+      let nodeEnter = svg.selectAll("g.node")
+        .data(graph.nodes, d => d.id)
+        .enter()
+        .append("g")
+        .attr("class", "node");
+
+      nodeEnter
+        .append("circle")
         .attr("r", 5)
-        .attr("fill", function(d) { return color(d.group); })
-        .call(d3.drag()
+        .attr("fill", function(d) { return color(d.id); });
+
+      nodeEnter
+        .append("text")
+        .style("text-anchor", "middle")
+        .attr("y", 15)
+        .text((d) => d.id);
+
+      nodeEnter
+        .call(
+          d3.drag()
           .on("start", drag_started)
           .on("drag", dragged)
-          .on("end", drag_ended));
+          .on("end", drag_ended)
+        );
 
-      node.append("title")
-        .text((d) => { return d.id; });
+
 
       simulation
         .nodes(graph.nodes)
         .on("tick", ticked);
 
       simulation.force("link")
-        .links(graph.links);
+        .links(graph.edges);
+
+
 
       function ticked() {
         link
@@ -65,9 +97,15 @@ export class ForceGraphComponent implements OnInit {
           .attr("x2", (d) => { return d.target.x; })
           .attr("y2", (d) => { return d.target.y; });
 
-        node
+        nodeEnter
           .attr("cx", (d) => { return d.x; })
           .attr("cy", (d) => { return d.y; });
+
+        d3.selectAll("g.node")
+          .attr("transform", d => `translate(${d.x}, ${d.y})`);
+
+        d3.selectAll("line")
+          .attr("marker-end", 'url(#triangle)');
       }
     });
 
@@ -87,5 +125,6 @@ export class ForceGraphComponent implements OnInit {
       d.fx = null;
       d.fy = null;
     }
+
   }
 }
